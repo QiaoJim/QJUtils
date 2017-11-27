@@ -6,13 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -36,6 +34,11 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
         return ContextCompat.checkSelfPermission(context, p) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * 回调结果中，判断result数组是否全为0-即全部授权成功
+     * @param result
+     * @return
+     */
     public static boolean allPermitted(int[] result) {
         for (int aResult : result) {
             if (aResult != PackageManager.PERMISSION_GRANTED) {
@@ -45,6 +48,13 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * 检查是否全部授权
+     * @param activity
+     * @param code
+     * @param map
+     * @return
+     */
     public static boolean check(Activity activity, int code, Map<String, String> map) {
         List<String> list = new ArrayList<>();
         for (Map.Entry entry : map.entrySet()) {
@@ -54,13 +64,42 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
 
         for (String s : list) {
             if (!isPermissionGranted(activity, s)) {
-                ActivityCompat.requestPermissions(activity, list.toArray(new String[list.size()]), code);
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * 请求系统授权对话框
+     * @param activity
+     * @param code
+     * @param map
+     */
+    public static void request(Activity activity, int code, Map<String, String> map){
+        List<String> list = new ArrayList<>();
+        List<String> requestList = new ArrayList<>();
+        for (Map.Entry entry : map.entrySet()) {
+            String value = (String) entry.getValue();
+            list.add(value);
+        }
+
+        for (String s : list) {
+            if (!isPermissionGranted(activity, s)) {
+                requestList.add(s);
+            }
+        }
+        ActivityCompat.requestPermissions(activity, requestList.toArray(new String[requestList.size()]), code);
+
+    }
+
+    /**
+     * 手动授权
+     * @param activity
+     * @param results
+     * @param map
+     * @param dialog
+     */
     public static void manuallyAuthorized(final Activity activity, int[] results, Map<String, String> map, QJCheckDialog dialog) {
         List<String> tipList = new ArrayList<>();
         List<String> perList = new ArrayList<>();
@@ -90,20 +129,21 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
 
     private static void buildDialog(final Activity activity, final AlertDialog.Builder builder, final QJCheckDialog qjCheckDialog, String title) {
         AlertDialog dialog = null;
-        if (null != qjCheckDialog && qjCheckDialog.view != null) {
+        if (qjCheckDialog.view != null) {
 
             TextView textView = qjCheckDialog.textView;
-            Button okBtn = qjCheckDialog.okBtn;
-            Button noBtn = qjCheckDialog.noBtn;
+            Button okBtn = qjCheckDialog.positiveBtn;
+            Button noBtn = qjCheckDialog.negativeBtn;
 
             builder.setView(qjCheckDialog.view);
             dialog = builder.create();
+            qjCheckDialog.alertDialog=dialog;
 
             if (textView != null) {
                 textView.setText(title);
             }
             if (okBtn != null) {
-                okBtn.setText((qjCheckDialog.okTxt == null ? "去手动授权" : qjCheckDialog.okTxt));
+                okBtn.setText((qjCheckDialog.positiveTxt == null ? "去手动授权" : qjCheckDialog.positiveTxt));
                 okBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -119,7 +159,7 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
                 });
             }
             if (noBtn != null) {
-                noBtn.setText((qjCheckDialog.noTxt == null ? "取消" : qjCheckDialog.noTxt));
+                noBtn.setText((qjCheckDialog.negativeTxt == null ? "取消" : qjCheckDialog.negativeTxt));
                 final AlertDialog finalDialog = dialog;
                 noBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -152,13 +192,17 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
                 }
             });
             dialog = builder.create();
+            qjCheckDialog.alertDialog=dialog;
         }
 
         dialog.show();
     }
 
-    public static void manuallyAuthorized(final Activity activity, int[] results, Map<String, String> map) {
-        manuallyAuthorized(activity, results, map, null);
+    /**
+     * 手动授权后，取消对话框
+     * @param qjCheckDialog
+     */
+    public static void dismiss(QJCheckDialog qjCheckDialog) {
+        qjCheckDialog.alertDialog.dismiss();
     }
-
 }
