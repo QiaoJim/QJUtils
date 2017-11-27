@@ -14,6 +14,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
         return true;
     }
 
-    public static void manuallyAuthorized(final Activity activity, int[] results, Map<String, String> map) {
+    public static void manuallyAuthorized(final Activity activity, int[] results, Map<String, String> map, QJCheckDialog dialog) {
         List<String> tipList = new ArrayList<>();
         List<String> perList = new ArrayList<>();
 
@@ -81,10 +83,30 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
             title += "\n" + tip;
         }
 
-        AlertDialog dialog = buildAlertDialog(activity, title,
-                new DialogInterface.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        buildDialog(activity, builder, dialog, title);
+
+    }
+
+    private static void buildDialog(final Activity activity, final AlertDialog.Builder builder, final QJCheckDialog qjCheckDialog, String title) {
+        AlertDialog dialog = null;
+        if (null != qjCheckDialog && qjCheckDialog.view != null) {
+
+            TextView textView = qjCheckDialog.textView;
+            Button okBtn = qjCheckDialog.okBtn;
+            Button noBtn = qjCheckDialog.noBtn;
+
+            builder.setView(qjCheckDialog.view);
+            dialog = builder.create();
+
+            if (textView != null) {
+                textView.setText(title);
+            }
+            if (okBtn != null) {
+                okBtn.setText((qjCheckDialog.okTxt == null ? "去手动授权" : qjCheckDialog.okTxt));
+                okBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
                         Intent intent = new Intent();
                         intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -95,35 +117,48 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
                         activity.startActivity(intent);
                     }
                 });
+            }
+            if (noBtn != null) {
+                noBtn.setText((qjCheckDialog.noTxt == null ? "取消" : qjCheckDialog.noTxt));
+                final AlertDialog finalDialog = dialog;
+                noBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finalDialog.dismiss();
+                    }
+                });
+            }
+
+
+        } else {
+            builder.setMessage(title);
+            builder.setPositiveButton("去手动授权",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            intent.addCategory(Intent.CATEGORY_DEFAULT);
+                            intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            activity.startActivity(intent);
+                        }
+                    });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            dialog = builder.create();
+        }
+
         dialog.show();
-
     }
 
-    private static AlertDialog buildAlertDialog(Context context, View view,
-                                                String title, String msg,
-                                                String btnText, DialogInterface.OnClickListener listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        // 定制对话框内容
-        if (title != null && !"".equals(title)) {
-            builder.setTitle(title);
-        }
-        if (msg != null && !"".equals(msg)) {
-            builder.setMessage(msg);
-        }
-        if (btnText != null || !"".equals(btnText) || listener != null) {
-            btnText = (btnText == null || "".equals(btnText)) ? "确定" : btnText;
-            builder.setPositiveButton(btnText, listener);
-            builder.setNegativeButton("取消", null);
-        }
-        if (view != null) {
-            builder.setView(view);
-        }
-        return builder.create();
-    }
-
-    private static AlertDialog buildAlertDialog(Context context, String msg, DialogInterface.OnClickListener listener) {
-        return buildAlertDialog(context, null, null, msg, null, listener);
+    public static void manuallyAuthorized(final Activity activity, int[] results, Map<String, String> map) {
+        manuallyAuthorized(activity, results, map, null);
     }
 
 }
