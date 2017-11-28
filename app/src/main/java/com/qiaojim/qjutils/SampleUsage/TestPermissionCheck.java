@@ -2,6 +2,7 @@ package com.qiaojim.qjutils.SampleUsage;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,9 +43,7 @@ public class TestPermissionCheck extends AppCompatActivity {
 
         /*若手动全部授权后，dismiss掉对话框*/
         if (QJPermissionCheckUtils.check(activity, PER_REQUEST_CODE, map)) {
-            if (qjCheckDialog != null) {
-                QJPermissionCheckUtils.dismiss(qjCheckDialog);
-            }
+            QJPermissionCheckUtils.dismiss(qjCheckDialog);
         }
 
 
@@ -71,12 +70,26 @@ public class TestPermissionCheck extends AppCompatActivity {
                     */
 
                     /*按默认对话框提示用户*/
-                    QJPermissionCheckUtils.manuallyAuthorized(activity, grantResults, map, new QJCheckDialog(activity));
+                    qjCheckDialog = QJCheckDialog.newDefaultInstance(activity);
+                    QJPermissionCheckUtils.manuallyAuthorized(activity, grantResults, map, qjCheckDialog);
 
                 }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case QJCheckDialog.REQCODE_FOR_PERMISSIONS:
+                /*若手动全部授权后，dismiss掉对话框*/
+                if (QJPermissionCheckUtils.check(activity, PER_REQUEST_CODE, map)) {
+                    QJPermissionCheckUtils.dismiss(qjCheckDialog);
+                }
+                break;
         }
     }
 }

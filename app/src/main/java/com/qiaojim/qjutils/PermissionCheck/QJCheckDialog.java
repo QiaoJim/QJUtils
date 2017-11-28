@@ -14,6 +14,8 @@ import android.widget.TextView;
  */
 public class QJCheckDialog {
 
+    public static final int REQCODE_FOR_PERMISSIONS = 2333;
+
     public AlertDialog alertDialog;     //显示的对话框对象
     public Activity activity;
     public View view;           //自定义对话框布局view
@@ -21,8 +23,12 @@ public class QJCheckDialog {
     public Button positiveBtn, negativeBtn;
     public String positiveTxt, negativeTxt;
 
-    public QJCheckDialog(Activity activity) {
+    private QJCheckDialog(Activity activity) {
         this.activity=activity;
+    }
+
+    public static QJCheckDialog newDefaultInstance(Activity activity){
+        return new QJCheckDialog(activity);
     }
 
     public static class Builder {

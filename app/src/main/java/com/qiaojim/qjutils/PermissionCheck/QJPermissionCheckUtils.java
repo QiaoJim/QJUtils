@@ -165,37 +165,43 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         finalDialog.dismiss();
+                        activity.finish();
                     }
                 });
             }
+            dialog.show();
 
 
         } else {
             builder.setMessage(title);
-            builder.setPositiveButton("去手动授权",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            intent.addCategory(Intent.CATEGORY_DEFAULT);
-                            intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                            activity.startActivity(intent);
-                        }
-                    });
+            builder.setPositiveButton("去手动授权",null);
             builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    activity.finish();
                 }
             });
             dialog = builder.create();
             qjCheckDialog.alertDialog=dialog;
+            dialog.show();
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    activity.startActivityForResult(intent, QJCheckDialog.REQCODE_FOR_PERMISSIONS);
+                }
+            });
         }
 
-        dialog.show();
     }
 
     /**
@@ -203,6 +209,8 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
      * @param qjCheckDialog
      */
     public static void dismiss(QJCheckDialog qjCheckDialog) {
-        qjCheckDialog.alertDialog.dismiss();
+        if (qjCheckDialog!=null){
+            qjCheckDialog.alertDialog.dismiss();
+        }
     }
 }
