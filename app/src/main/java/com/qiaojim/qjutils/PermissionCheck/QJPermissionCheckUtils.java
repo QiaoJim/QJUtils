@@ -51,11 +51,10 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
     /**
      * 检查是否全部授权
      * @param activity
-     * @param code
      * @param map
      * @return
      */
-    public static boolean check(Activity activity, int code, Map<String, String> map) {
+    public static boolean check(Activity activity, Map<String, String> map) {
         List<String> list = new ArrayList<>();
         for (Map.Entry entry : map.entrySet()) {
             String value = (String) entry.getValue();

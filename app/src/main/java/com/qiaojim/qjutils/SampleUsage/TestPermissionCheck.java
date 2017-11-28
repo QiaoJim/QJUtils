@@ -29,7 +29,7 @@ public class TestPermissionCheck extends AppCompatActivity {
 
         map.put("存储图片", Manifest.permission.WRITE_EXTERNAL_STORAGE);
         map.put("获取手机识别符信息", Manifest.permission.READ_PHONE_STATE);
-        if (QJPermissionCheckUtils.check(activity, PER_REQUEST_CODE, map)) {
+        if (QJPermissionCheckUtils.check(activity, map)) {
             // TODO 权限已经全部获取，直接继续操作
         } else {
             /*请求获取对应权限*/
@@ -42,7 +42,7 @@ public class TestPermissionCheck extends AppCompatActivity {
         super.onResume();
 
         /*若手动全部授权后，dismiss掉对话框*/
-        if (QJPermissionCheckUtils.check(activity, PER_REQUEST_CODE, map)) {
+        if (QJPermissionCheckUtils.check(activity, map)) {
             QJPermissionCheckUtils.dismiss(qjCheckDialog);
         }
 
@@ -86,7 +86,7 @@ public class TestPermissionCheck extends AppCompatActivity {
         switch (requestCode) {
             case QJCheckDialog.REQCODE_FOR_PERMISSIONS:
                 /*若手动全部授权后，dismiss掉对话框*/
-                if (QJPermissionCheckUtils.check(activity, PER_REQUEST_CODE, map)) {
+                if (QJPermissionCheckUtils.check(activity, map)) {
                     QJPermissionCheckUtils.dismiss(qjCheckDialog);
                 }
                 break;
