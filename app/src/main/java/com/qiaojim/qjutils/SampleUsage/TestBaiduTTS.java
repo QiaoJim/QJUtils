@@ -31,7 +31,7 @@ import static com.qiaojim.qjutils.BaiduTTS.MainHandlerConstant.PRINT;
 import static com.qiaojim.qjutils.BaiduTTS.MainHandlerConstant.UI_CHANGE_INPUT_TEXT_SELECTION;
 import static com.qiaojim.qjutils.BaiduTTS.MainHandlerConstant.UI_CHANGE_SYNTHES_TEXT_SELECTION;
 
-public class QJTTSActivity extends AppCompatActivity {
+public class TestBaiduTTS extends AppCompatActivity {
 
     private EditText editText;
     private Button button;
@@ -46,11 +46,11 @@ public class QJTTSActivity extends AppCompatActivity {
     private static String MODEL_FILENAME = TEMP_DIR + "/" + "bd_etts_speech_male.dat"; // 请确保该PATH下有这个文件 male是男声 female女声
     private Handler mainHandler;
 
-    protected String appId = "10219088";
+    protected String appId = "10457134";
 
-    protected String appKey = "s1mjVfFgmFmjftfh90Vii60T";
+    protected String appKey = "TeUEBcZNsLy2mUT9XfWUdVuw";
 
-    protected String secretKey = "HNKwPTCIGNgemNDM5CvH2n3HcppP2RUr";
+    protected String secretKey = "3GQqnQKa47G7nGuteQ6ldNhP4oWobnZd ";
 
 
     // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
@@ -126,8 +126,8 @@ public class QJTTSActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        editText = (EditText) findViewById(R.id.input);
-        button = (Button) findViewById(R.id.speak);
+        editText = findViewById(R.id.input);
+        button = findViewById(R.id.speak);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
