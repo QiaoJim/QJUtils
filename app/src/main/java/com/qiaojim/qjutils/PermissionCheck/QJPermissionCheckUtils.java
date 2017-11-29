@@ -136,6 +136,7 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
 
             builder.setView(qjCheckDialog.view);
             dialog = builder.create();
+            dialog.setCancelable(false);
             qjCheckDialog.alertDialog=dialog;
 
             if (textView != null) {
@@ -182,6 +183,7 @@ public class QJPermissionCheckUtils extends AppCompatActivity {
                 }
             });
             dialog = builder.create();
+            dialog.setCancelable(false);
             qjCheckDialog.alertDialog=dialog;
             dialog.show();
 
