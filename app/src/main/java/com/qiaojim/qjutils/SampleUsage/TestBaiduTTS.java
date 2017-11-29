@@ -20,6 +20,8 @@ import com.baidu.tts.client.TtsMode;
 import com.qiaojim.qjutils.BaiduTTS.InitConfig;
 import com.qiaojim.qjutils.BaiduTTS.NonBlockSyntherizer;
 import com.qiaojim.qjutils.BaiduTTS.OfflineResource;
+import com.qiaojim.qjutils.BaiduTTS.QJBaiduTtsUtils;
+import com.qiaojim.qjutils.BaiduTTS.QJTtsInitConfig;
 import com.qiaojim.qjutils.BaiduTTS.UiMessageListener;
 import com.qiaojim.qjutils.R;
 
@@ -42,8 +44,8 @@ public class TestBaiduTTS extends AppCompatActivity {
     private static String TEMP_DIR = "/sdcard/baiduTTS"; //重要！请手动将assets目录下的3个dat 文件复制到该目录
 
     private static String TEXT_FILENAME = TEMP_DIR + "/" + "bd_etts_text.dat"; // 请确保该PATH下有这个文件
-
     private static String MODEL_FILENAME = TEMP_DIR + "/" + "bd_etts_speech_male.dat"; // 请确保该PATH下有这个文件 male是男声 female女声
+
     private Handler mainHandler;
 
     protected String appId = "10457134";
@@ -65,49 +67,29 @@ public class TestBaiduTTS extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qjtts);
 
-        mainHandler = new Handler() {
-            /*
-             * @param msg
-             */
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                handle(msg);
-            }
-
-        };
-
         initPermission();
         initView();
 
         initialTts(); // 初始化TTS引擎
     }
 
-    protected void handle(Message msg) {
-        int what = msg.what;
-        switch (what) {
-            case PRINT:
-                Log.e("TAG11",msg+"");
-                break;
-            case UI_CHANGE_INPUT_TEXT_SELECTION:
-                break;
-            case UI_CHANGE_SYNTHES_TEXT_SELECTION:
-                break;
-            default:
-                break;
-        }
-    }
-
     protected void initialTts() {
-        // 设置初始化参数
-        SpeechSynthesizerListener listener = new UiMessageListener(mainHandler); // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
-
-        Map<String, String> params = getParams();
-
-        // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
-        InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, offlineVoice, params, listener);
-
-        speechSynthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
+        QJTtsInitConfig config = new QJTtsInitConfig();
+        config.setApiKey(appKey);
+        config.setAppId(appId);
+        config.setOfflineVoice(offlineVoice);
+        config.setSecretKey(secretKey);
+        config.setTtsMode(ttsMode);
+        speechSynthesizer = QJBaiduTtsUtils.initTts(this, config);
+//        // 设置初始化参数
+//        SpeechSynthesizerListener listener = new UiMessageListener(new Handler()); // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
+//
+//        Map<String, String> params = getParams();
+//
+//        // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
+//        InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, offlineVoice, params, listener);
+//
+//        speechSynthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
     }
 
     protected Map<String, String> getParams() {
