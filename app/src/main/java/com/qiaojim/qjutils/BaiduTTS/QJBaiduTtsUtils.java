@@ -21,7 +21,7 @@ public class QJBaiduTtsUtils {
     public static NonBlockSyntherizer initTts(Context context, QJTtsInitConfig qjTtsInitConfig, Map<String, String> params) {
 
         /*初始化参数均默认*/
-        if (params==null){
+        if (params == null) {
             params = getDefaultParams();
         }
         Handler handler = new Handler();
@@ -38,6 +38,7 @@ public class QJBaiduTtsUtils {
 
         return initTts(context, qjTtsInitConfig, null);
     }
+
 
     private static Map<String, String> getDefaultParams() {
         Map<String, String> params = new HashMap<String, String>();

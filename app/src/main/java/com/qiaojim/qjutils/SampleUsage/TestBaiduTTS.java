@@ -80,6 +80,12 @@ public class TestBaiduTTS extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        speechSynthesizer.release();
+    }
+
     private void initView() {
         editText = findViewById(R.id.input);
         button = findViewById(R.id.speak);
