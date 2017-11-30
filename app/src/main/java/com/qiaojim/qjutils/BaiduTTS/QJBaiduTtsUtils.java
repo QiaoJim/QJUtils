@@ -39,7 +39,6 @@ public class QJBaiduTtsUtils {
         return initTts(context, qjTtsInitConfig, null);
     }
 
-
     private static Map<String, String> getDefaultParams() {
         Map<String, String> params = new HashMap<String, String>();
         // 以下参数均为选填
